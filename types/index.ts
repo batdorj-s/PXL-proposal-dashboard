@@ -16,6 +16,15 @@ export type ContentType =
   | 'PR'
   | '';
 
+export interface BrandAssets {
+  logo: string;
+  primary_color: string;
+  secondary_color: string;
+  accent_color: string;
+  font_serif: string;
+  font_sans: string;
+}
+
 export interface HeaderBlock {
   brand_name: string;
   campaign_name: string;
@@ -76,6 +85,7 @@ export interface PricingBlock {
 export interface Proposal {
   id: string;
   header: HeaderBlock;
+  brand: BrandAssets;
   background: BackgroundBlock;
   persona: PersonaBlock;
   insight: InsightBlock;
@@ -118,6 +128,14 @@ export function emptyProposal(): Proposal {
   return {
     id: crypto.randomUUID(),
     header: { brand_name: '', campaign_name: '', prepared_by: '', date: '' },
+    brand: {
+      logo: '',
+      primary_color: '#c8a55e',
+      secondary_color: '#4d9fff',
+      accent_color: '#e6ddd4',
+      font_serif: 'Cormorant Garamond',
+      font_sans: 'Space Grotesk',
+    },
     background: { context: '', key_challenge: '', supporting_data: '' },
     persona: { believes: '', fears: '', tension: '', daily_life: '', core_driver: '' },
     insight: { insight: '' },

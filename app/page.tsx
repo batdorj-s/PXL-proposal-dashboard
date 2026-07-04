@@ -12,10 +12,11 @@ import BlockInsight from '@/components/BlockInsight';
 import BlockStrategy from '@/components/BlockStrategy';
 import BlockCreativity from '@/components/BlockCreativity';
 import BlockPricing from '@/components/BlockPricing';
+import BlockBrand from '@/components/BlockBrand';
 import DraftsSidebar from '@/components/DraftsSidebar';
 
-const BLOCKS      = ['block-0','block-1','block-2','block-3','block-4','block-5','block-6'];
-const BLOCK_LABELS = ['Нүүр','Нөхцөл','Persona','Инсайт','Стратеги','Санаа','Үнэ'];
+const BLOCKS      = ['block-0','block-0b','block-1','block-2','block-3','block-4','block-5','block-6'];
+const BLOCK_LABELS = ['Нүүр','Брэнд','Нөхцөл','Persona','Инсайт','Стратеги','Санаа','Үнэ'];
 
 export default function Home() {
   const [drafts,      setDrafts]      = useState<Proposal[]>([]);
@@ -159,6 +160,7 @@ export default function Home() {
         {/* ── Content ── */}
         <div className="content-scroll">
           <BlockHeader     data={proposal.header}     onChange={v => setProposal(p => p ? { ...p, header: v }     : p)} />
+          <BlockBrand      data={proposal.brand}     onChange={v => setProposal(p => p ? { ...p, brand: v }     : p)} />
           <BlockBackground data={proposal.background} onChange={v => setProposal(p => p ? { ...p, background: v } : p)} />
           <BlockPersona    data={proposal.persona}    onChange={v => setProposal(p => p ? { ...p, persona: v }    : p)} />
           <BlockInsight    data={proposal.insight}    onChange={v => setProposal(p => p ? { ...p, insight: v }    : p)} />
