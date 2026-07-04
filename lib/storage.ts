@@ -1,11 +1,24 @@
-import { Proposal, emptyProposal } from '@/types';
+import { Proposal, BrandAssets, emptyProposal } from '@/types';
+
+const DEFAULT_BRAND: BrandAssets = {
+  logo: '',
+  primary_color: '#c8a55e',
+  secondary_color: '#4d9fff',
+  accent_color: '#e6ddd4',
+  font_serif: 'Cormorant Garamond',
+  font_sans: 'Space Grotesk',
+};
+
+function migrate(d: Partial<Proposal>): Proposal {
+  return { ...emptyProposal(), ...d, brand: { ...DEFAULT_BRAND, ...(d.brand || ({} as BrandAssets)) } };
+}
 
 const KEY = 'mpd_drafts';
 
 export function loadDrafts(): Proposal[] {
   if (typeof window === 'undefined') return [];
   try {
-    return JSON.parse(localStorage.getItem(KEY) || '[]');
+    return JSON.parse(localStorage.getItem(KEY) || '[]').map(migrate);
   } catch {
     return [];
   }

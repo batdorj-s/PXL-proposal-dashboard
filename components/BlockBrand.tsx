@@ -25,7 +25,8 @@ const FONT_OPTIONS_SANS = [
 ];
 
 export default function BlockBrand({ data, onChange }: Props) {
-  const set = (k: keyof BrandAssets, v: string) => onChange({ ...data, [k]: v });
+  const safe: BrandAssets = data || { logo: '', primary_color: '#c8a55e', secondary_color: '#4d9fff', accent_color: '#e6ddd4', font_serif: 'Cormorant Garamond', font_sans: 'Space Grotesk' };
+  const set = (k: keyof BrandAssets, v: string) => onChange({ ...safe, [k]: v });
 
   const handleLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -59,8 +60,8 @@ export default function BlockBrand({ data, onChange }: Props) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               overflow: 'hidden', flexShrink: 0,
             }}>
-              {data.logo ? (
-                <img src={data.logo} alt="logo" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+              {safe.logo ? (
+                <img src={safe.logo} alt="logo" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
               ) : (
                 <span style={{ fontFamily: 'var(--font-sans)', fontSize: 9, color: 'var(--muted)' }}>—</span>
               )}
@@ -69,7 +70,7 @@ export default function BlockBrand({ data, onChange }: Props) {
               <input type="file" accept="image/*" onChange={handleLogo} style={{ display: 'none' }} />
               <span className="btn btn-ghost" style={{ cursor: 'pointer' }}>Файл сонгох</span>
             </label>
-            {data.logo && (
+            {safe.logo && (
               <button className="btn btn-danger" style={{ padding: '3px 7px', fontSize: 10 }} onClick={() => set('logo', '')}>✕</button>
             )}
           </div>
@@ -108,7 +109,7 @@ export default function BlockBrand({ data, onChange }: Props) {
         {/* Fonts */}
         <div>
           <label className="field-label">Гарчиг фонт (Serif)</label>
-          <select className="field-select" value={data.font_serif}
+          <select className="field-select" value={safe.font_serif}
             onChange={e => set('font_serif', e.target.value)}>
             {FONT_OPTIONS_SERIF.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
@@ -117,7 +118,7 @@ export default function BlockBrand({ data, onChange }: Props) {
 
         <div>
           <label className="field-label">Body фонт (Sans)</label>
-          <select className="field-select" value={data.font_sans}
+          <select className="field-select" value={safe.font_sans}
             onChange={e => set('font_sans', e.target.value)}>
             {FONT_OPTIONS_SANS.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
@@ -135,25 +136,25 @@ export default function BlockBrand({ data, onChange }: Props) {
         }}>
           <div style={{
             width: 36, height: 36, borderRadius: '50%',
-            background: data.primary_color,
+            background: safe.primary_color,
             flexShrink: 0,
           }} />
           <div style={{ flex: 1 }}>
             <div style={{
-              fontFamily: data.font_serif, fontSize: 18, color: data.accent_color, lineHeight: 1.3,
+              fontFamily: safe.font_serif, fontSize: 18, color: safe.accent_color, lineHeight: 1.3,
             }}>
-              {data.font_serif} — ABCabc 123
+              {safe.font_serif} — ABCabc 123
             </div>
             <div style={{
-              fontFamily: data.font_sans, fontSize: 11, color: data.secondary_color, marginTop: 4,
+              fontFamily: safe.font_sans, fontSize: 11, color: safe.secondary_color, marginTop: 4,
             }}>
-              {data.font_sans} — ABCabc 123
+              {safe.font_sans} — ABCabc 123
             </div>
           </div>
           <div style={{
             padding: '4px 10px', borderRadius: 2,
-            background: data.primary_color, color: data.accent_color,
-            fontFamily: data.font_sans, fontSize: 9, fontWeight: 600,
+            background: safe.primary_color, color: safe.accent_color,
+            fontFamily: safe.font_sans, fontSize: 9, fontWeight: 600,
             letterSpacing: '0.1em', textTransform: 'uppercase', whiteSpace: 'nowrap',
           }}>
             Preview
