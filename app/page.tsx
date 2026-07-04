@@ -4,6 +4,7 @@ import { Proposal, RATE_CARD } from '@/types';
 import { loadDrafts, newDraft, saveDraft } from '@/lib/storage';
 import { calcPricing, fmt } from '@/lib/pricing';
 import { generatePptx } from '@/lib/generatePptx';
+import PptPreview from '@/components/PptPreview';
 import BlockHeader from '@/components/BlockHeader';
 import BlockBackground from '@/components/BlockBackground';
 import BlockPersona from '@/components/BlockPersona';
@@ -21,7 +22,8 @@ export default function Home() {
   const [proposal, setProposal] = useState<Proposal | null>(null);
   const [activeBlock, setActiveBlock] = useState('block-0');
   const [saving, setSaving] = useState(false);
-  const [exporting, setExporting] = useState(false);
+  const [exporting, setExporting]   = useState(false);
+  const [previewing, setPreviewing] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
@@ -254,19 +256,17 @@ export default function Home() {
 
             <button
               className="btn no-print"
-              onClick={handleExportPptx}
-              disabled={exporting}
+              onClick={() => setPreviewing(true)}
               style={{
-                background: exporting ? 'transparent' : 'transparent',
-                color: exporting ? 'var(--muted)' : 'var(--gold)',
+                background: 'transparent',
+                color: 'var(--gold)',
                 border: '1px solid var(--gold-dim)',
-                opacity: exporting ? 0.6 : 1,
                 transition: 'all 0.2s',
               }}
-              onMouseEnter={e => { if (!exporting) { e.currentTarget.style.background = 'var(--gold)'; e.currentTarget.style.color = 'var(--bg)'; } }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = exporting ? 'var(--muted)' : 'var(--gold)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--gold-dim)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              {exporting ? '...' : '↓ PPT'}
+              ▶ PPT Preview
             </button>
           </div>
         </header>
@@ -294,6 +294,16 @@ export default function Home() {
           <div style={{ height: 80 }} />
         </div>
       </div>
+
+      {/* PPT Preview modal */}
+      {previewing && (
+        <PptPreview
+          proposal={proposal}
+          onClose={() => setPreviewing(false)}
+          onDownload={handleExportPptx}
+          downloading={exporting}
+        />
+      )}
     </div>
   );
 }
