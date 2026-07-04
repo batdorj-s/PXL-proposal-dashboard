@@ -32,16 +32,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const d = refreshDrafts();
-    if (d.length > 0) setProposal(d[0]);
-    else { const f = newDraft(); setProposal(f); refreshDrafts(); }
+    queueMicrotask(() => {
+      const d = refreshDrafts();
+      if (d.length > 0) setProposal(d[0]);
+      else { const f = newDraft(); setProposal(f); refreshDrafts(); }
+    });
   }, [refreshDrafts]);
 
   /* Auto-save */
   useEffect(() => {
     if (!proposal) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
-    setSaving(true);
+    queueMicrotask(() => setSaving(true));
     saveTimer.current = setTimeout(() => {
       saveDraft(proposal); setSaving(false); refreshDrafts();
     }, 800);
@@ -63,7 +65,7 @@ export default function Home() {
     const prevIds     = proposal.pricing.items.map(i => i.id).join(',');
     const nextIds     = merged.map(i => i.id).join(',');
     if (prevIds !== nextIds)
-      setProposal(prev => prev ? { ...prev, pricing: { ...prev.pricing, items: merged } } : prev);
+      queueMicrotask(() => setProposal(prev => prev ? { ...prev, pricing: { ...prev.pricing, items: merged } } : prev));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposal?.creativity.executions]);
 

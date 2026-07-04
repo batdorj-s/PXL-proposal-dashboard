@@ -215,7 +215,7 @@ function Slide4({ p }: { p: Proposal }) {
       <NavBar activeIdx={3} />
       <SectionHeader num="03" title="Гол инсайт" subtitle="Insight — Хэлэгдээгүй үнэн" />
       <Surface x={18} y={108} w={SW - 36} h={SH - 126} highlight>
-        <div style={{ position: 'absolute', left: 16, top: 6, fontFamily: FS.serif, fontSize: 80, lineHeight: 1, color: C.gold, opacity: 0.8 }}>"</div>
+          <div style={{ position: 'absolute', left: 16, top: 6, fontFamily: FS.serif, fontSize: 80, lineHeight: 1, color: C.gold, opacity: 0.8 }}>&ldquo;</div>
         <div style={{ position: 'absolute', left: 76, top: 26, right: 24, bottom: 32, display: 'flex', alignItems: 'center' }}>
           <div style={{ fontFamily: FS.serif, fontSize: 17, fontStyle: 'italic', color: C.text, lineHeight: 1.6, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 7, WebkitBoxOrient: 'vertical' }}>
             {insight.insight || '[ Инсайт энд орно ]'}
@@ -236,7 +236,6 @@ function Slide5({ p }: { p: Proposal }) {
     { num: 'II',  label: 'Суваг',       text: strategy.channels,    hint: 'Хаана, ямар сувгаар хүрэх вэ?' },
     { num: 'III', label: 'Хандлага',   text: strategy.approach,    hint: 'Ямар өнцгөөр, ямар аяар?' },
   ];
-  const colW = (SW - 36 - 2) / 3;
   return (
     <div style={{ position: 'absolute', inset: 0, background: C.bg }}>
       <AccentBar />
@@ -261,7 +260,6 @@ function Slide5({ p }: { p: Proposal }) {
 function Slide6({ p }: { p: Proposal }) {
   const { creativity } = p;
   const leftW = (SW - 36) * 0.55;
-  const rightX = 18 + leftW + 14;
   const rightW = SW - 36 - leftW - 14;
   return (
     <div style={{ position: 'absolute', inset: 0, background: C.bg }}>

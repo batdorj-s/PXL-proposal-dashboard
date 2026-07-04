@@ -24,7 +24,7 @@ export default function BlockInsight({ data, onChange }: Props) {
       </div>
 
       <div className="info-box" style={{ marginBottom: 20 }}>
-        Загвар: <em>"Энэ хүн ___ хүсдэг, гэхдээ ___ учраас ___ гэж мэдэрдэг."</em>
+        Загвар: <em>&ldquo;Энэ хүн ___ хүсдэг, гэхдээ ___ учраас ___ гэж мэдэрдэг.&rdquo;</em>
       </div>
 
       <textarea
