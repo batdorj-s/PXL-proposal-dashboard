@@ -18,7 +18,7 @@ export default function BlockInsight({ data, onChange }: Props) {
           <span className="block-subtitle">Insight</span>
           <h2 className="block-title">Гол инсайт</h2>
         </div>
-        <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-sans)', fontSize: 9, color: 'var(--gold)', letterSpacing: '0.08em', padding: '3px 8px', border: '1px solid var(--gold-2)', borderRadius: 2 }}>
+        <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--gold)', letterSpacing: '0.08em', padding: '4px 10px', border: '1px solid var(--gold-2)', borderRadius: 3, background: 'var(--gold-4)' }}>
           Хамгийн чухал
         </span>
       </div>
@@ -29,7 +29,7 @@ export default function BlockInsight({ data, onChange }: Props) {
 
       <textarea
         className="field-textarea large"
-        style={{ fontSize: 15, lineHeight: 1.7 }}
+        style={{ fontSize: 'var(--text-md)', lineHeight: 1.7 }}
         placeholder="Энэ хүн ________________ хүсдэг, гэхдээ ________________ учраас ________________ гэж мэдэрдэг."
         value={data.insight}
         onChange={e => onChange({ insight: e.target.value })}

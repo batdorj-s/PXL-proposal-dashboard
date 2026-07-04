@@ -99,7 +99,7 @@ export default function Home() {
   const totals = calcPricing(proposal.pricing);
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+    <div className="app-shell">
 
       {/* Sidebar */}
       {sidebarOpen && (
@@ -112,24 +112,19 @@ export default function Home() {
         />
       )}
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
+      <div className="app-main">
 
         {/* ── Top bar ── */}
         <header className="topbar no-print">
 
-          {/* Toggle */}
-          <button className="btn-icon" onClick={() => setSidebarOpen(v => !v)} title="Sidebar">
-            ☰
-          </button>
+          <button className="btn-icon" onClick={() => setSidebarOpen(v => !v)} title="Sidebar">☰</button>
 
           <div className="topbar-divider" />
 
-          {/* Brand */}
           <span className="topbar-brand">MERIDIAN</span>
 
           <div className="topbar-divider" />
 
-          {/* Doc title */}
           <span className="topbar-doc-name">
             {proposal.header.brand_name || 'Шинэ Proposal'}
           </span>
@@ -137,7 +132,6 @@ export default function Home() {
             <span className="topbar-doc-sub">— {proposal.header.campaign_name}</span>
           )}
 
-          {/* Block nav */}
           <nav className="topbar-nav">
             {BLOCKS.map((id, i) => (
               <button
@@ -150,25 +144,13 @@ export default function Home() {
             ))}
           </nav>
 
-          {/* Right */}
           <div className="topbar-end">
             <span className={`topbar-status ${saving ? 'saving' : 'saved'}`}>
-              {saving ? 'Хадгалж байна' : '✓ Хадгалагдсан'}
+              {saving ? 'Хадгалж байна…' : '✓ Хадгалагдсан'}
             </span>
-
             <span className="topbar-total">{fmt(totals.grand_total)}</span>
-
-            <button className="btn btn-success no-print" onClick={handlePrint}>
-              ↓ PDF
-            </button>
-
-            <button
-              className="btn no-print"
-              onClick={() => setPreviewing(true)}
-              style={{ color: 'var(--gold)', borderColor: 'var(--border-2)' }}
-            >
-              ▶ Preview
-            </button>
+            <button className="btn btn-success no-print" onClick={handlePrint}>↓ PDF</button>
+            <button className="btn btn-success no-print" onClick={() => setPreviewing(true)}>▶ Preview</button>
           </div>
         </header>
 
@@ -181,12 +163,11 @@ export default function Home() {
           <BlockStrategy   data={proposal.strategy}   onChange={v => setProposal(p => p ? { ...p, strategy: v }   : p)} />
           <BlockCreativity data={proposal.creativity} onChange={v => setProposal(p => p ? { ...p, creativity: v } : p)} />
           <BlockPricing    data={proposal.pricing}    onChange={v => setProposal(p => p ? { ...p, pricing: v }    : p)} />
-          <div style={{ height: 64 }} />
+          <div style={{ height: 48 }} />
         </div>
 
       </div>
 
-      {/* PPT Preview modal */}
       {previewing && (
         <PptPreview
           proposal={proposal}

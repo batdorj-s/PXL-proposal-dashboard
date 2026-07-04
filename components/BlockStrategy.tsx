@@ -33,7 +33,7 @@ export default function BlockStrategy({ data, onChange }: Props) {
         {cols.map(c => (
           <div key={c.key} className="surface-card">
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 14 }}>
-              <span style={{ fontFamily: 'var(--font-serif)', fontSize: 10, fontStyle: 'italic', color: 'var(--gold)' }}>{c.num}</span>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-sm)', fontStyle: 'italic', color: 'var(--gold)', opacity: 0.8 }}>{c.num}</span>
               <span className="field-label" style={{ margin: 0 }}>{c.label}</span>
             </div>
             <textarea

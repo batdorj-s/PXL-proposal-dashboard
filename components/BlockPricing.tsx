@@ -32,7 +32,7 @@ export default function BlockPricing({ data, onChange }: Props) {
           <span className="block-subtitle">Pricing</span>
           <h2 className="block-title">Үнийн санал</h2>
         </div>
-        <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-sans)', fontSize: 9, color: 'var(--muted)', letterSpacing: '0.08em' }}>
+        <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', color: 'var(--muted)', letterSpacing: '0.08em' }}>
           Автомат тооцоолол
         </span>
       </div>
@@ -119,20 +119,20 @@ export default function BlockPricing({ data, onChange }: Props) {
       </div>
 
       {/* Totals */}
-      <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 2, padding: '4px 20px 16px' }}>
+      <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 3, padding: '4px 20px 16px' }}>
         <div className="totals-row">
-          <span style={{ color: 'var(--muted)', fontFamily: 'var(--font-sans)', fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Нийт дүн</span>
-          <span style={{ fontFamily: 'var(--font-serif)', fontSize: 15 }}>{fmt(totals.subtotal)}</span>
+          <span style={{ color: 'var(--muted)', fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Нийт дүн</span>
+          <span style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-md)' }}>{fmt(totals.subtotal)}</span>
         </div>
         {data.discount_pct > 0 && (
           <div className="totals-row">
-            <span style={{ color: 'var(--muted)', fontFamily: 'var(--font-sans)', fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Хөнгөлөлт ({data.discount_pct}%)</span>
-            <span style={{ color: 'var(--danger)', fontFamily: 'var(--font-serif)', fontSize: 15 }}>−{fmt(totals.discount_amount)}</span>
+            <span style={{ color: 'var(--muted)', fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Хөнгөлөлт ({data.discount_pct}%)</span>
+            <span style={{ color: 'var(--danger)', fontFamily: 'var(--font-serif)', fontSize: 'var(--text-md)' }}>−{fmt(totals.discount_amount)}</span>
           </div>
         )}
         <div className="totals-row">
-          <span style={{ color: 'var(--muted)', fontFamily: 'var(--font-sans)', fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase' }}>НӨАТ ({data.vat_pct}%)</span>
-          <span style={{ fontFamily: 'var(--font-serif)', fontSize: 15 }}>{fmt(totals.vat_amount)}</span>
+          <span style={{ color: 'var(--muted)', fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>НӨАТ ({data.vat_pct}%)</span>
+          <span style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-md)' }}>{fmt(totals.vat_amount)}</span>
         </div>
         <div className="totals-row grand">
           <span>Нийт төлбөр</span>

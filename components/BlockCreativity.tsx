@@ -43,7 +43,7 @@ export default function BlockCreativity({ data, onChange }: Props) {
           <label className="field-label">Big Idea</label>
           <textarea
             className="field-textarea large"
-            style={{ fontSize: 16, lineHeight: 1.7 }}
+            style={{ fontSize: 'var(--text-md)', lineHeight: 1.7 }}
             placeholder="Нэг өгүүлбэрт багтах гол санаа — реклам, эвент, бүх зүйл эндээс ургана."
             value={data.big_idea}
             onChange={e => set('big_idea', e.target.value)}
