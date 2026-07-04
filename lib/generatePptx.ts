@@ -2,154 +2,196 @@ import PptxGenJS from 'pptxgenjs';
 import type { Proposal } from '@/types';
 import { calcPricing, fmt } from '@/lib/pricing';
 
-/* ── Slide canvas size (matches template: 12192000 x 6858000 EMU) ─── */
-const W = 13.33;
-const H = 7.5;
+/* ════════════════════════════════════════════════════════════════════
+   MERIDIAN — PPT Design System
+   Mirrors the dashboard exactly: dark bg, gold accent, cream text
+   ════════════════════════════════════════════════════════════════════ */
 
-/* ── Color palette ──────────────────────────────────────────────────── */
+const W = 13.33; // LAYOUT_WIDE width (inches)
+const H = 7.5;   // LAYOUT_WIDE height (inches)
+
+/* ── Design tokens (matches globals.css) ─────────────────────────── */
 const C = {
-  navy:   '24365B',
-  dark:   '1B2A4A',
-  lblue:  'CADCFC',
-  coral:  'FF5A5F',
-  grayBg: 'E4E9F2',
-  grayMd: '6B7A90',
-  grayLt: 'AEB8C9',
-  white:  'FFFFFF',
-  black:  '000000',
+  bg:       '050508', // --bg
+  surface:  '111118', // --surface
+  surface2: '18181F', // --surface-2
+  border:   '1E1E28', // ~--border visible for pptx
+  text:     'E8E0D5', // --text
+  muted:    '6B6A72', // --muted (opaque approx)
+  muted2:   '9A9098', // --muted-2 (opaque approx)
+  gold:     'C9A96E', // --gold
+  goldDim:  '2E2519', // --gold-glow (dark)
+  blue:     '4A9EFF', // --blue
+  danger:   'E05555', // --danger
 } as const;
 
-/* ── Nav tabs (shown on slides 2–7) ─────────────────────────────────── */
-const NAV_TABS = ['Нөхцөл', 'Хэрэглэгч', 'Инсайт', 'Стратеги', 'Санаа', 'Үнэ'];
+/* ── Typography ──────────────────────────────────────────────────── */
+const F = {
+  serif: 'Garamond',    // Cormorant Garamond → Garamond (system font)
+  sans:  'Calibri',     // Space Grotesk → Calibri
+  body:  'Calibri',     // Inter → Calibri
+} as const;
 
-function addNavTabs(slide: PptxGenJS.Slide, activeIdx: number) {
-  const tabW = 0.92;
-  const tabH = 0.42;
-  const startX = W - NAV_TABS.length * (tabW + 0.02) - 0.3;
-  const y = 0.48;
+/* ── Nav labels ──────────────────────────────────────────────────── */
+const NAV = ['Нүүр', 'Нөхцөл', 'Persona', 'Инсайт', 'Стратеги', 'Санаа', 'Үнэ'];
 
-  NAV_TABS.forEach((label, i) => {
-    const x = startX + i * (tabW + 0.02);
+/* ════════════════════════════════════════════════════════════════════
+   PRIMITIVES
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Full-slide dark background */
+function addBg(s: PptxGenJS.Slide) {
+  s.background = { color: C.bg };
+}
+
+/* Left vertical gold accent bar — mirrors block-card::before */
+function addAccentBar(s: PptxGenJS.Slide) {
+  s.addShape('rect' as PptxGenJS.ShapeType, {
+    x: 0, y: 0, w: 0.055, h: H,
+    fill: { color: C.gold },
+    line: { color: C.gold, width: 0 },
+  });
+}
+
+/* Top navigation bar — mirrors dashboard header */
+function addNavBar(s: PptxGenJS.Slide, activeIdx: number) {
+  /* Bar background */
+  s.addShape('rect' as PptxGenJS.ShapeType, {
+    x: 0, y: 0, w: W, h: 0.52,
+    fill: { color: C.surface },
+    line: { color: C.border, width: 0.75 },
+  });
+
+  /* MERIDIAN wordmark */
+  s.addText('MERIDIAN', {
+    x: 0.2, y: 0, w: 1.4, h: 0.52,
+    align: 'left', valign: 'middle',
+    fontFace: F.sans, fontSize: 8,
+    bold: true, charSpacing: 3,
+    color: C.gold,
+  });
+
+  /* Divider */
+  s.addShape('rect' as PptxGenJS.ShapeType, {
+    x: 1.65, y: 0.12, w: 0.01, h: 0.28,
+    fill: { color: C.border },
+    line: { color: C.border, width: 0 },
+  });
+
+  /* Nav tabs */
+  const tabW = 1.3;
+  const startX = W - NAV.length * tabW - 0.2;
+
+  NAV.forEach((label, i) => {
+    const x = startX + i * tabW;
     const isActive = i === activeIdx;
 
-    slide.addShape('rect' as PptxGenJS.ShapeType, {
-      x, y, w: tabW, h: tabH,
-      fill: { color: isActive ? C.coral : C.grayBg },
-      line: { color: isActive ? C.coral : C.grayBg, width: 0 },
+    if (isActive) {
+      /* Gold underline for active */
+      s.addShape('rect' as PptxGenJS.ShapeType, {
+        x, y: 0.44, w: tabW, h: 0.08,
+        fill: { color: C.gold },
+        line: { color: C.gold, width: 0 },
+      });
+    }
+
+    s.addText(label, {
+      x, y: 0, w: tabW, h: 0.44,
+      align: 'center', valign: 'middle',
+      fontFace: F.sans, fontSize: 7.5,
+      bold: isActive, charSpacing: 0.5,
+      color: isActive ? C.gold : C.muted,
     });
-
-    slide.addText(label, {
-      x, y, w: tabW, h: tabH,
-      align: 'center',
-      valign: 'middle',
-      fontSize: 8,
-      bold: isActive,
-      color: isActive ? C.white : C.grayMd,
-      fontFace: 'Arial',
-    });
   });
 }
 
-/* ── Slide background ────────────────────────────────────────────────── */
-function addBg(slide: PptxGenJS.Slide) {
-  slide.background = { color: C.navy };
+/* Section header block (top-left of content slides) */
+function addSectionHeader(
+  s: PptxGenJS.Slide,
+  num: string,
+  title: string,
+  subtitle: string,
+) {
+  const contentY = 0.7;
 
-  /* Decorative circles – top right, matching template */
-  slide.addShape('ellipse' as PptxGenJS.ShapeType, {
-    x: W - 3.8, y: -1.6, w: 4.2, h: 4.2,
-    fill: { color: '1B2A4A' },
-    line: { color: '1B2A4A', width: 0 },
-  });
-  slide.addShape('ellipse' as PptxGenJS.ShapeType, {
-    x: W - 2.6, y: -0.7, w: 1.5, h: 1.5,
-    fill: { color: C.coral },
-    line: { color: C.coral, width: 0 },
-  });
-}
-
-/* ── Section number badge ────────────────────────────────────────────── */
-function addBadge(slide: PptxGenJS.Slide, num: string, x = 0.7, y = 0.7) {
-  slide.addShape('ellipse' as PptxGenJS.ShapeType, {
-    x, y, w: 0.62, h: 0.62,
-    fill: { color: C.coral },
-    line: { color: C.coral, width: 0 },
-  });
-  slide.addText(num, {
-    x, y, w: 0.62, h: 0.62,
-    align: 'center', valign: 'middle',
-    fontSize: 14, bold: true,
-    color: C.white, fontFace: 'Arial',
-  });
-}
-
-/* ── Section title row ───────────────────────────────────────────────── */
-function addSectionTitle(slide: PptxGenJS.Slide, title: string, subtitle: string) {
-  /* Coral title bar */
-  slide.addShape('rect' as PptxGenJS.ShapeType, {
-    x: 1.5, y: 0.42, w: 6.0, h: 0.35,
-    fill: { color: C.coral },
-    line: { color: C.coral, width: 0 },
-  });
-  slide.addText(title, {
-    x: 1.5, y: 0.42, w: 6.0, h: 0.35,
+  /* Section number — small italic serif gold */
+  s.addText(num, {
+    x: 0.25, y: contentY, w: 0.6, h: 0.35,
     align: 'left', valign: 'middle',
-    fontSize: 13, bold: true,
-    color: C.white, fontFace: 'Arial',
+    fontFace: F.serif, fontSize: 11,
+    italic: true, color: C.gold,
   });
 
-  /* Dark subtitle bar */
-  slide.addShape('rect' as PptxGenJS.ShapeType, {
-    x: 0.7, y: 1.33, w: 8.2, h: 0.5,
-    fill: { color: C.dark },
-    line: { color: C.dark, width: 0 },
+  /* Divider */
+  s.addShape('rect' as PptxGenJS.ShapeType, {
+    x: 0.82, y: contentY + 0.07, w: 0.01, h: 0.22,
+    fill: { color: C.muted },
+    line: { color: C.muted, width: 0 },
   });
-  slide.addText(subtitle, {
-    x: 0.7, y: 1.33, w: 8.2, h: 0.5,
+
+  /* Title — large serif cream */
+  s.addText(title, {
+    x: 0.92, y: contentY - 0.06, w: 9.0, h: 0.48,
     align: 'left', valign: 'middle',
-    fontSize: 11, italic: true,
-    color: C.grayBg, fontFace: 'Arial',
+    fontFace: F.serif, fontSize: 22,
+    color: C.text,
+  });
+
+  /* Subtitle — small muted */
+  s.addText(subtitle, {
+    x: 0.92, y: contentY + 0.42, w: 10.0, h: 0.28,
+    align: 'left', valign: 'top',
+    fontFace: F.body, fontSize: 8.5,
+    italic: true, color: C.muted2,
   });
 }
 
-/* ── White content card ──────────────────────────────────────────────── */
-function addCard(slide: PptxGenJS.Slide, x: number, y: number, w: number, h: number) {
-  slide.addShape('rect' as PptxGenJS.ShapeType, {
+/* Dark surface card — mirrors .block-card */
+function addSurface(
+  s: PptxGenJS.Slide,
+  x: number, y: number, w: number, h: number,
+  highlight = false,
+) {
+  s.addShape('rect' as PptxGenJS.ShapeType, {
     x, y, w, h,
-    fill: { color: C.white },
-    line: { color: C.white, width: 0 },
-    shadow: { type: 'outer', blur: 6, offset: 2, angle: 45, color: '000000', opacity: 0.15 },
+    fill: { color: C.surface },
+    line: { color: highlight ? C.gold : C.border, width: highlight ? 1 : 0.5 },
   });
 }
 
-/* ── Inside-card dark label ──────────────────────────────────────────── */
-function addCardLabel(slide: PptxGenJS.Slide, label: string, x: number, y: number, w: number) {
-  slide.addShape('rect' as PptxGenJS.ShapeType, {
-    x, y, w, h: 0.4,
-    fill: { color: C.dark },
-    line: { color: C.dark, width: 0 },
-  });
-  slide.addText(label, {
-    x, y, w, h: 0.4,
-    align: 'left', valign: 'middle',
-    fontSize: 9, bold: true,
-    color: C.lblue, fontFace: 'Arial',
+/* Field label — mirrors .field-label (small caps, gold-ish muted) */
+function addLabel(s: PptxGenJS.Slide, text: string, x: number, y: number, w: number) {
+  s.addText(text, {
+    x, y, w, h: 0.22,
+    align: 'left', valign: 'top',
+    fontFace: F.sans, fontSize: 7,
+    bold: true, charSpacing: 1.5,
+    color: C.muted2,
   });
 }
 
-/* ── Body text inside card ───────────────────────────────────────────── */
-function addCardText(
-  slide: PptxGenJS.Slide,
+/* Field content — mirrors field text */
+function addContent(
+  s: PptxGenJS.Slide,
   text: string,
   x: number, y: number, w: number, h: number,
-  opts: Partial<PptxGenJS.TextPropsOptions> = {}
+  opts: Partial<PptxGenJS.TextPropsOptions> = {},
 ) {
-  slide.addText(text || '—', {
+  s.addText(text || '—', {
     x, y, w, h,
     align: 'left', valign: 'top',
-    fontSize: 11, color: C.dark,
-    fontFace: 'Arial',
-    wrap: true,
+    fontFace: F.body, fontSize: 11,
+    color: C.text, wrap: true,
     ...opts,
+  });
+}
+
+/* Thin horizontal gold divider line */
+function addDivider(s: PptxGenJS.Slide, x: number, y: number, w: number) {
+  s.addShape('rect' as PptxGenJS.ShapeType, {
+    x, y, w, h: 0.008,
+    fill: { color: C.border },
+    line: { color: C.border, width: 0 },
   });
 }
 
@@ -158,40 +200,95 @@ function addCardText(
    ════════════════════════════════════════════════════════════════════ */
 export async function generatePptx(proposal: Proposal): Promise<void> {
   const pptx = new PptxGenJS();
-  pptx.layout = 'LAYOUT_WIDE'; // 13.33" × 7.5"
+  pptx.layout = 'LAYOUT_WIDE';
 
   const { header, background, persona, insight, strategy, creativity, pricing } = proposal;
   const totals = calcPricing(pricing);
 
   /* ──────────────────────────────────────────────────────────────────
      SLIDE 1 — Cover
+     Full dark with decorative geometry, large brand name
   ────────────────────────────────────────────────────────────────── */
   {
     const s = pptx.addSlide();
     addBg(s);
 
-    /* "МАРКЕТИНГИЙН САНАЛ" label */
-    slide1Label(s, 0.9, 2.15, 9.0, 'МАРКЕТИНГИЙН САНАЛ');
+    /* Left gold accent bar */
+    addAccentBar(s);
 
-    /* Brand name (large white box) */
-    s.addShape('rect' as PptxGenJS.ShapeType, {
-      x: 0.9, y: 2.6, w: 10.5, h: 1.1,
-      fill: { color: C.white }, line: { color: C.white, width: 0 },
+    /* Decorative circle — top right (dark surface, matches WebGL mesh mood) */
+    s.addShape('ellipse' as PptxGenJS.ShapeType, {
+      x: W - 4.2, y: -2.4, w: 6.0, h: 6.0,
+      fill: { color: C.surface },
+      line: { color: C.border, width: 1 },
     });
-    s.addText(header.brand_name || 'Брэндийн нэр', {
-      x: 0.9, y: 2.6, w: 10.5, h: 1.1,
+    s.addShape('ellipse' as PptxGenJS.ShapeType, {
+      x: W - 2.1, y: -0.6, w: 2.4, h: 2.4,
+      fill: { color: C.surface2 },
+      line: { color: C.gold, width: 0.75 },
+    });
+    /* Small gold dot */
+    s.addShape('ellipse' as PptxGenJS.ShapeType, {
+      x: W - 1.1, y: 0.3, w: 0.14, h: 0.14,
+      fill: { color: C.gold },
+      line: { color: C.gold, width: 0 },
+    });
+
+    /* MERIDIAN wordmark */
+    s.addText('MERIDIAN', {
+      x: 0.55, y: 1.5, w: 4.0, h: 0.35,
       align: 'left', valign: 'middle',
-      fontSize: 28, bold: true,
-      color: C.dark, fontFace: 'Arial',
+      fontFace: F.sans, fontSize: 9,
+      bold: true, charSpacing: 4,
+      color: C.gold,
     });
 
-    /* Campaign name */
-    slide1Label(s, 0.9, 3.85, 9.5, header.campaign_name || 'Кампанит ажлын нэр');
+    /* Thin gold line under wordmark */
+    s.addShape('rect' as PptxGenJS.ShapeType, {
+      x: 0.55, y: 1.9, w: 0.55, h: 0.01,
+      fill: { color: C.gold }, line: { color: C.gold, width: 0 },
+    });
 
-    /* Prepared by + Date */
-    slide1Label(s, 0.9, 5.7, 8.0,
-      `Бэлтгэсэн: ${header.prepared_by || '—'}     Огноо: ${header.date || '—'}`
-    );
+    /* Brand name — very large serif */
+    s.addText(header.brand_name || 'Брэндийн нэр', {
+      x: 0.55, y: 2.1, w: 9.5, h: 1.6,
+      align: 'left', valign: 'middle',
+      fontFace: F.serif, fontSize: 54,
+      color: C.text,
+    });
+
+    /* Campaign name — gold italic */
+    s.addText(header.campaign_name || 'Кампанит ажлын нэр', {
+      x: 0.55, y: 3.8, w: 9.5, h: 0.55,
+      align: 'left', valign: 'middle',
+      fontFace: F.serif, fontSize: 18,
+      italic: true, color: C.gold,
+    });
+
+    /* Thin divider */
+    addDivider(s, 0.55, 4.55, 4.0);
+
+    /* Prepared by / Date — small muted */
+    s.addText(`Бэлтгэсэн: ${header.prepared_by || '—'}`, {
+      x: 0.55, y: 4.7, w: 5.0, h: 0.3,
+      align: 'left', valign: 'middle',
+      fontFace: F.body, fontSize: 9,
+      color: C.muted2,
+    });
+    s.addText(`Огноо: ${header.date || '—'}`, {
+      x: 0.55, y: 5.05, w: 5.0, h: 0.3,
+      align: 'left', valign: 'middle',
+      fontFace: F.body, fontSize: 9,
+      color: C.muted2,
+    });
+
+    /* Bottom-right: "Маркетингийн санал" */
+    s.addText('Маркетингийн санал', {
+      x: W - 4.0, y: H - 0.5, w: 3.8, h: 0.35,
+      align: 'right', valign: 'middle',
+      fontFace: F.sans, fontSize: 7,
+      charSpacing: 1.5, color: C.muted,
+    });
   }
 
   /* ──────────────────────────────────────────────────────────────────
@@ -200,23 +297,30 @@ export async function generatePptx(proposal: Proposal): Promise<void> {
   {
     const s = pptx.addSlide();
     addBg(s);
-    addBadge(s, '1');
-    addNavTabs(s, 0);
-    addSectionTitle(s, 'НӨХЦӨЛ БАЙДАЛ', 'Background — Ямар асуудлыг шийдэх вэ?');
+    addAccentBar(s);
+    addNavBar(s, 1);
+    addSectionHeader(s, '01', 'Нөхцөл байдал', 'Background — Ямар асуудлыг шийдэх вэ?');
 
-    const cardY = 2.0, cardH = 4.8;
-    addCard(s, 0.7, cardY, W - 1.0, cardH);
+    /* Main surface card */
+    const cardX = 0.25, cardY = 1.5, cardW = W - 0.5, cardH = H - 1.7;
+    addSurface(s, cardX, cardY, cardW, cardH);
 
-    addCardLabel(s, 'БРЭНДИЙН ОДООГИЙН НӨХЦӨЛ', 1.1, 2.35, W - 1.8);
-    addCardText(s, background.context, 1.1, 2.85, W - 1.8, 1.4);
+    /* Нөхцөл */
+    addLabel(s, 'БРЭНДИЙН ОДООГИЙН НӨХЦӨЛ', cardX + 0.3, cardY + 0.3, cardW - 0.6);
+    addDivider(s, cardX + 0.3, cardY + 0.55, cardW - 0.6);
+    addContent(s, background.context, cardX + 0.3, cardY + 0.62, cardW * 0.58, 1.3);
 
-    addCardLabel(s, 'ГОЛ СОРИЛТ', 1.1, 4.35, W - 1.8);
-    addCardText(s, background.key_challenge, 1.1, 4.82, W - 1.8, 0.9);
+    /* Сорилт */
+    addLabel(s, 'ГОЛ СОРИЛТ', cardX + 0.3, cardY + 2.1, cardW - 0.6);
+    addDivider(s, cardX + 0.3, cardY + 2.35, cardW - 0.6);
+    addContent(s, background.key_challenge, cardX + 0.3, cardY + 2.42, cardW * 0.58, 1.0);
 
-    if (background.supporting_data) {
-      addCardLabel(s, 'ДЭМЖИХ ӨГӨГДӨЛ', 1.1, 5.82, W - 1.8);
-      addCardText(s, background.supporting_data, 1.1, 6.28, W - 1.8, 0.4, { fontSize: 9.5 });
-    }
+    /* Supporting data (right column) */
+    const rx = cardX + cardW * 0.65;
+    const rw = cardW * 0.32;
+    addLabel(s, 'ДЭМЖИХ ӨГӨГДӨЛ', rx, cardY + 0.3, rw);
+    addDivider(s, rx, cardY + 0.55, rw);
+    addContent(s, background.supporting_data || '—', rx, cardY + 0.62, rw, 3.5, { fontSize: 10 });
   }
 
   /* ──────────────────────────────────────────────────────────────────
@@ -225,29 +329,43 @@ export async function generatePptx(proposal: Proposal): Promise<void> {
   {
     const s = pptx.addSlide();
     addBg(s);
-    addBadge(s, '2');
-    addNavTabs(s, 1);
-    addSectionTitle(s, 'ЗОРИЛТОТ ХЭРЭГЛЭГЧ', 'Persona — Хэнд зориулж байна?');
+    addAccentBar(s);
+    addNavBar(s, 2);
+    addSectionHeader(s, '02', 'Зорилтот хэрэглэгч', 'Persona — Хэнд зориулж байна?');
 
-    addCard(s, 0.7, 2.0, W - 1.0, 4.8);
+    const cardX = 0.25, cardY = 1.5, cardW = W - 0.5, cardH = H - 1.7;
+    addSurface(s, cardX, cardY, cardW, cardH);
 
-    const col1X = 1.1, col2X = 7.0;
-    const colW  = 5.6;
+    const lx = cardX + 0.3, rx = cardX + cardW / 2 + 0.1;
+    const cw = cardW / 2 - 0.45;
 
-    addCardLabel(s, 'ЮУНД ИТГЭДЭГ ВЭ?', col1X, 2.35, colW);
-    addCardText(s, persona.believes, col1X, 2.82, colW, 0.9);
+    /* Итгэл / Айдас */
+    addLabel(s, 'ЮУНД ИТГЭДЭГ?', lx, cardY + 0.28, cw);
+    addDivider(s, lx, cardY + 0.52, cw);
+    addContent(s, persona.believes, lx, cardY + 0.59, cw, 0.95);
 
-    addCardLabel(s, 'ЮУНААС АЙДАГ?', col2X, 2.35, colW);
-    addCardText(s, persona.fears, col2X, 2.82, colW, 0.9);
+    addLabel(s, 'ЮУНААС АЙДАГ?', rx, cardY + 0.28, cw);
+    addDivider(s, rx, cardY + 0.52, cw);
+    addContent(s, persona.fears, rx, cardY + 0.59, cw, 0.95);
 
-    addCardLabel(s, 'ЯМАр ЗӨРЧИЛТЭЙ АМЬДАРДАГ?', col1X, 3.88, colW);
-    addCardText(s, persona.tension, col1X, 4.35, colW, 0.9);
+    /* Зөрчил / Өдөр тутам */
+    addLabel(s, 'ЯМАр ЗӨРЧИЛТЭЙ АМЬДАРДАГ?', lx, cardY + 1.65, cw);
+    addDivider(s, lx, cardY + 1.89, cw);
+    addContent(s, persona.tension, lx, cardY + 1.96, cw, 0.95);
 
-    addCardLabel(s, 'ӨДӨР ТУТМЫН АМЬДРАЛ', col2X, 3.88, colW);
-    addCardText(s, persona.daily_life, col2X, 4.35, colW, 0.9);
+    addLabel(s, 'ӨДӨР ТУТМЫН АМЬДРАЛ', rx, cardY + 1.65, cw);
+    addDivider(s, rx, cardY + 1.89, cw);
+    addContent(s, persona.daily_life, rx, cardY + 1.96, cw, 0.95);
 
-    addCardLabel(s, 'ГОЛ ХӨДӨЛГҮҮР', col1X, 5.41, W - 1.8);
-    addCardText(s, persona.core_driver, col1X, 5.88, W - 1.8, 0.65, { bold: true, fontSize: 14, color: C.coral });
+    /* Core driver — full width, highlighted */
+    addDivider(s, cardX + 0.3, cardY + 3.1, cardW - 0.6);
+    addLabel(s, 'ГОЛ ХӨДӨЛГҮҮР', cardX + 0.3, cardY + 3.2, cardW - 0.6);
+    s.addText(persona.core_driver || '—', {
+      x: cardX + 0.3, y: cardY + 3.45, w: cardW - 0.6, h: 0.6,
+      align: 'left', valign: 'middle',
+      fontFace: F.serif, fontSize: 22,
+      italic: true, color: C.gold,
+    });
   }
 
   /* ──────────────────────────────────────────────────────────────────
@@ -256,35 +374,36 @@ export async function generatePptx(proposal: Proposal): Promise<void> {
   {
     const s = pptx.addSlide();
     addBg(s);
-    addBadge(s, '3');
-    addNavTabs(s, 2);
-    addSectionTitle(s, 'ГОЛ ИНСАЙТ', 'Insight — Хэлэгдээгүй үнэн');
+    addAccentBar(s);
+    addNavBar(s, 3);
+    addSectionHeader(s, '03', 'Гол инсайт', 'Insight — Хэлэгдээгүй үнэн');
 
-    addCard(s, 0.7, 2.0, W - 1.0, 4.8);
+    const cardX = 0.25, cardY = 1.5, cardW = W - 0.5, cardH = H - 1.7;
+    addSurface(s, cardX, cardY, cardW, cardH, true);
 
-    /* Big quote marks */
-    s.addText('"', {
-      x: 1.0, y: 2.2, w: 1.0, h: 1.0,
+    /* Large opening quote mark */
+    s.addText('“', {
+      x: cardX + 0.25, y: cardY + 0.1, w: 1.2, h: 1.2,
       align: 'left', valign: 'top',
-      fontSize: 72, color: C.coral,
-      fontFace: 'Arial',
+      fontFace: F.serif, fontSize: 96,
+      color: C.gold,
     });
 
-    addCardText(s, insight.insight || '[ Инсайт энд орно ]', 1.8, 2.6, W - 2.8, 3.5, {
-      fontSize: 18,
-      italic: true,
-      bold: false,
-      color: C.dark,
-      align: 'left',
-      valign: 'middle',
+    /* Insight text — large centered serif */
+    s.addText(insight.insight || '[ Инсайт энд орно ]', {
+      x: cardX + 1.1, y: cardY + 0.35, w: cardW - 1.5, h: cardH - 1.0,
+      align: 'left', valign: 'middle',
+      fontFace: F.serif, fontSize: 20,
+      italic: true, color: C.text,
+      wrap: true,
     });
 
     /* Bottom hint */
-    s.addText('Ганц хүчтэй инсайт бич — олон биш. Бүх стратеги эндээс ургана.', {
-      x: 1.1, y: 6.45, w: W - 1.8, h: 0.4,
-      align: 'left', valign: 'middle',
-      fontSize: 9, italic: true,
-      color: C.grayMd, fontFace: 'Arial',
+    s.addText('Ганц хүчтэй инсайт — бүх стратеги эндээс ургана.', {
+      x: cardX + 0.3, y: cardY + cardH - 0.42, w: cardW - 0.6, h: 0.32,
+      align: 'right', valign: 'middle',
+      fontFace: F.body, fontSize: 8,
+      italic: true, color: C.muted,
     });
   }
 
@@ -294,43 +413,43 @@ export async function generatePptx(proposal: Proposal): Promise<void> {
   {
     const s = pptx.addSlide();
     addBg(s);
-    addBadge(s, '4');
-    addNavTabs(s, 3);
-    addSectionTitle(s, 'СТРАТЕГИ', 'Strategy — Юу хийж, яаж хүрэх вэ?');
+    addAccentBar(s);
+    addNavBar(s, 4);
+    addSectionHeader(s, '04', 'Стратеги', 'Strategy — Юу хийж, яаж хүрэх вэ?');
 
-    const cardY = 2.0, cardH = 4.8;
-    const col = (W - 1.4) / 3;
+    const cardY = 1.5, cardH = H - 1.7;
+    const colW  = (W - 0.5 - 0.04 * 2) / 3;
+
     const cols = [
-      { num: '1', label: 'ГОЛ МЕССЕЖ',  text: strategy.key_message, hint: 'Инсайтад суурилсан гол зурвас' },
-      { num: '2', label: 'СУВАГ',       text: strategy.channels,    hint: 'Хаана, ямар сувгаар хүрэх вэ?' },
-      { num: '3', label: 'ХАНДЛАГА',   text: strategy.approach,    hint: 'Ямар өнцгөөр, ямар аяар?' },
+      { num: 'I',   label: 'ГОЛ МЕССЕЖ', text: strategy.key_message, hint: 'Инсайтад суурилсан гол зурвас' },
+      { num: 'II',  label: 'СУВАГ',       text: strategy.channels,    hint: 'Хаана, ямар сувгаар хүрэх вэ?' },
+      { num: 'III', label: 'ХАНДЛАГА',   text: strategy.approach,    hint: 'Ямар өнцгөөр, ямар аяар?' },
     ];
 
     cols.forEach((c, i) => {
-      const x = 0.7 + i * col;
-      /* Card */
-      addCard(s, x + 0.02, cardY, col - 0.04, cardH);
-      /* Number */
-      s.addShape('ellipse' as PptxGenJS.ShapeType, {
-        x: x + 0.18, y: cardY + 0.25, w: 0.42, h: 0.42,
-        fill: { color: C.coral }, line: { color: C.coral, width: 0 },
-      });
+      const x = 0.25 + i * (colW + 0.02);
+
+      addSurface(s, x, cardY, colW, cardH);
+
+      /* Roman numeral */
       s.addText(c.num, {
-        x: x + 0.18, y: cardY + 0.25, w: 0.42, h: 0.42,
-        align: 'center', valign: 'middle',
-        fontSize: 11, bold: true,
-        color: C.white, fontFace: 'Arial',
+        x: x + 0.2, y: cardY + 0.22, w: 0.9, h: 0.4,
+        align: 'left', valign: 'middle',
+        fontFace: F.serif, fontSize: 13,
+        italic: true, color: C.gold,
       });
-      /* Label */
-      addCardLabel(s, c.label, x + 0.18, cardY + 0.85, col - 0.26);
-      /* Content */
-      addCardText(s, c.text, x + 0.18, cardY + 1.35, col - 0.26, 2.8);
-      /* Hint */
+
+      addDivider(s, x + 0.2, cardY + 0.68, colW - 0.4);
+      addLabel(s, c.label, x + 0.2, cardY + 0.78, colW - 0.4);
+      addDivider(s, x + 0.2, cardY + 1.02, colW - 0.4);
+      addContent(s, c.text, x + 0.2, cardY + 1.1, colW - 0.4, cardH - 1.8);
+
+      /* Bottom hint */
       s.addText(c.hint, {
-        x: x + 0.18, y: cardY + 4.1, w: col - 0.26, h: 0.45,
+        x: x + 0.2, y: cardY + cardH - 0.45, w: colW - 0.4, h: 0.35,
         align: 'left', valign: 'bottom',
-        fontSize: 8.5, italic: true,
-        color: C.grayMd, fontFace: 'Arial',
+        fontFace: F.body, fontSize: 8,
+        italic: true, color: C.muted,
         wrap: true,
       });
     });
@@ -342,35 +461,64 @@ export async function generatePptx(proposal: Proposal): Promise<void> {
   {
     const s = pptx.addSlide();
     addBg(s);
-    addBadge(s, '5');
-    addNavTabs(s, 4);
-    addSectionTitle(s, 'БҮТЭЭЛЧ САНАА', 'Big Idea — Санахуйц гол санаа');
+    addAccentBar(s);
+    addNavBar(s, 5);
+    addSectionHeader(s, '05', 'Бүтээлч санаа', 'Big Idea — Санахуйц гол санаа');
 
-    addCard(s, 0.7, 2.0, W - 1.0, 4.8);
+    const cardX = 0.25, cardY = 1.5, cardW = W - 0.5, cardH = H - 1.7;
+    addSurface(s, cardX, cardY, cardW, cardH);
 
-    /* Left column */
-    addCardLabel(s, 'БИГ АЙДИА', 1.1, 2.35, 7.5);
-    addCardText(s, creativity.big_idea, 1.1, 2.82, 7.5, 1.8, { fontSize: 14, bold: true });
+    const leftW  = cardW * 0.55;
+    const rightX = cardX + leftW + 0.2;
+    const rightW = cardW - leftW - 0.5;
 
-    addCardLabel(s, 'TAGLINE', 1.1, 4.75, 7.5);
-    addCardText(s, creativity.tagline, 1.1, 5.22, 7.5, 0.65, { fontSize: 16, italic: true, color: C.coral });
+    /* Left: Big idea + Tagline */
+    addLabel(s, 'BIG IDEA', cardX + 0.3, cardY + 0.28, leftW - 0.3);
+    addDivider(s, cardX + 0.3, cardY + 0.52, leftW - 0.3);
+    addContent(s, creativity.big_idea, cardX + 0.3, cardY + 0.6, leftW - 0.3, 2.2, {
+      fontFace: F.serif, fontSize: 16, bold: false,
+    });
 
-    /* Right column — executions */
-    const execX = 9.0;
-    addCardLabel(s, 'ГҮЙЦЭТГЭЛ', execX, 2.35, W - execX - 0.4);
-    creativity.executions.slice(0, 4).forEach((ex, i) => {
-      const y = 2.82 + i * 0.9;
-      s.addText(`${ex.content_type || '—'}`, {
-        x: execX, y, w: W - execX - 0.4, h: 0.3,
-        align: 'left', valign: 'top',
-        fontSize: 9, bold: true,
-        color: C.coral, fontFace: 'Arial',
-      });
+    addDivider(s, cardX + 0.3, cardY + 2.95, leftW - 0.3);
+    addLabel(s, 'TAGLINE', cardX + 0.3, cardY + 3.05, leftW - 0.3);
+    s.addText(creativity.tagline || '—', {
+      x: cardX + 0.3, y: cardY + 3.3, w: leftW - 0.3, h: 0.7,
+      align: 'left', valign: 'middle',
+      fontFace: F.serif, fontSize: 18,
+      italic: true, color: C.gold,
+    });
+
+    /* Vertical divider between columns */
+    s.addShape('rect' as PptxGenJS.ShapeType, {
+      x: cardX + leftW + 0.08, y: cardY + 0.28, w: 0.008, h: cardH - 0.56,
+      fill: { color: C.border }, line: { color: C.border, width: 0 },
+    });
+
+    /* Right: Executions */
+    addLabel(s, 'ГҮЙЦЭТГЭЛ', rightX, cardY + 0.28, rightW);
+    addDivider(s, rightX, cardY + 0.52, rightW);
+
+    creativity.executions.slice(0, 5).forEach((ex, i) => {
+      const ey = cardY + 0.65 + i * 0.95;
+      /* Type pill */
+      if (ex.content_type) {
+        s.addShape('rect' as PptxGenJS.ShapeType, {
+          x: rightX, y: ey, w: rightW, h: 0.22,
+          fill: { color: C.goldDim },
+          line: { color: C.gold, width: 0.5 },
+        });
+        s.addText(ex.content_type, {
+          x: rightX + 0.08, y: ey, w: rightW - 0.1, h: 0.22,
+          align: 'left', valign: 'middle',
+          fontFace: F.sans, fontSize: 7.5,
+          bold: true, charSpacing: 0.5, color: C.gold,
+        });
+      }
       s.addText(ex.description || '—', {
-        x: execX, y: y + 0.28, w: W - execX - 0.4, h: 0.5,
+        x: rightX, y: ey + 0.25, w: rightW, h: 0.62,
         align: 'left', valign: 'top',
-        fontSize: 9, color: C.dark,
-        fontFace: 'Arial', wrap: true,
+        fontFace: F.body, fontSize: 9.5,
+        color: C.muted2, wrap: true,
       });
     });
   }
@@ -381,118 +529,121 @@ export async function generatePptx(proposal: Proposal): Promise<void> {
   {
     const s = pptx.addSlide();
     addBg(s);
-    addBadge(s, '6');
-    addNavTabs(s, 5);
-    addSectionTitle(s, 'ҮНИЙН САНАЛ', 'Pricing — Автомат тооцоолол');
+    addAccentBar(s);
+    addNavBar(s, 6);
+    addSectionHeader(s, '06', 'Үнийн санал', 'Pricing — Автомат тооцоолол');
 
-    addCard(s, 0.7, 2.0, W - 1.0, 4.8);
+    const cardX = 0.25, cardY = 1.5, cardW = W - 0.5, cardH = H - 1.7;
+    addSurface(s, cardX, cardY, cardW, cardH);
 
-    /* Table header */
-    const cols = [
-      { label: 'КОНТЕНТ ТӨРӨЛ', x: 1.1,  w: 4.0 },
-      { label: 'НЭГЖийн ҮНЭ',  x: 5.2,  w: 2.4 },
-      { label: 'ТОО',           x: 7.7,  w: 1.0 },
-      { label: 'НИЙТ',          x: 8.8,  w: 2.5 },
+    /* Table columns */
+    const tCols = [
+      { label: 'КОНТЕНТ ТӨРӨЛ', x: cardX + 0.3,  w: 4.2  },
+      { label: 'НЭГЖИЙН ҮНЭ',  x: cardX + 4.65,  w: 2.5  },
+      { label: 'ТОО',           x: cardX + 7.3,   w: 0.9  },
+      { label: 'НИЙТ',          x: cardX + 8.35,  w: 2.5  },
     ];
 
-    cols.forEach(c => {
-      s.addShape('rect' as PptxGenJS.ShapeType, {
-        x: c.x, y: 2.35, w: c.w, h: 0.35,
-        fill: { color: C.dark }, line: { color: C.dark, width: 0 },
-      });
+    /* Table header row */
+    s.addShape('rect' as PptxGenJS.ShapeType, {
+      x: cardX + 0.2, y: cardY + 0.28, w: cardW - 0.4, h: 0.33,
+      fill: { color: C.surface2 },
+      line: { color: C.border, width: 0.5 },
+    });
+    tCols.forEach(c => {
       s.addText(c.label, {
-        x: c.x, y: 2.35, w: c.w, h: 0.35,
+        x: c.x, y: cardY + 0.28, w: c.w, h: 0.33,
         align: 'left', valign: 'middle',
-        fontSize: 8, bold: true,
-        color: C.lblue, fontFace: 'Arial',
+        fontFace: F.sans, fontSize: 7,
+        bold: true, charSpacing: 1, color: C.muted2,
       });
     });
 
-    /* Rows */
-    const maxRows = Math.min(pricing.items.length, 6);
+    /* Data rows */
+    const maxRows = Math.min(pricing.items.length, 7);
     pricing.items.slice(0, maxRows).forEach((item, i) => {
-      const rowY = 2.78 + i * 0.42;
-      const lineTotal = item.unit_price * Math.max(0, item.quantity);
-      const bg = i % 2 === 0 ? 'F5F7FA' : C.white;
+      const ry  = cardY + 0.68 + i * 0.42;
+      const lt  = item.unit_price * Math.max(0, item.quantity);
+      const alt = i % 2 === 1;
 
-      s.addShape('rect' as PptxGenJS.ShapeType, {
-        x: 1.1, y: rowY, w: W - 1.8, h: 0.38,
-        fill: { color: bg }, line: { color: 'E4E9F2', width: 0.5 },
-      });
+      if (alt) {
+        s.addShape('rect' as PptxGenJS.ShapeType, {
+          x: cardX + 0.2, y: ry, w: cardW - 0.4, h: 0.38,
+          fill: { color: C.surface2 },
+          line: { color: C.border, width: 0.3 },
+        });
+      } else {
+        s.addShape('rect' as PptxGenJS.ShapeType, {
+          x: cardX + 0.2, y: ry, w: cardW - 0.4, h: 0.38,
+          fill: { color: 'transparent' },
+          line: { color: C.border, width: 0.3 },
+        });
+      }
 
       [
-        { x: 1.1, w: 4.0, text: item.content_type || '—' },
-        { x: 5.2, w: 2.4, text: fmt(item.unit_price) },
-        { x: 7.7, w: 1.0, text: String(item.quantity) },
-        { x: 8.8, w: 2.5, text: fmt(lineTotal), color: C.coral },
+        { col: tCols[0], text: item.content_type || '—', color: C.text   },
+        { col: tCols[1], text: fmt(item.unit_price),      color: C.muted2 },
+        { col: tCols[2], text: String(item.quantity),     color: C.muted2 },
+        { col: tCols[3], text: fmt(lt),                   color: C.blue   },
       ].forEach(cell => {
         s.addText(cell.text, {
-          x: cell.x + 0.08, y: rowY, w: cell.w - 0.1, h: 0.38,
+          x: cell.col.x, y: ry, w: cell.col.w, h: 0.38,
           align: 'left', valign: 'middle',
-          fontSize: 10,
-          color: (cell as { color?: string }).color || C.dark,
-          fontFace: 'Arial',
+          fontFace: F.body, fontSize: 10,
+          color: cell.color,
         });
       });
     });
 
-    /* Totals box */
-    const totY = 2.78 + maxRows * 0.42 + 0.15;
-    addCard(s, 8.0, totY, W - 8.4, H - totY - 0.35);
+    /* Totals panel — bottom right */
+    const totY = cardY + 0.68 + maxRows * 0.42 + 0.15;
+    const totX = cardX + cardW * 0.6;
+    const totW = cardW * 0.38;
+
+    addDivider(s, totX, totY, totW);
 
     const totLines = [
-      { label: 'Нийт дүн',     value: fmt(totals.subtotal),         color: C.dark },
-      { label: 'Хөнгөлөлт',   value: pricing.discount_pct > 0 ? `-${fmt(totals.discount_amount)}` : '—', color: 'CC0000' },
-      { label: 'НӨАТ',         value: fmt(totals.vat_amount),       color: C.dark },
-      { label: 'НИЙТ ТӨЛБӨР', value: fmt(totals.grand_total),      color: C.coral },
+      { label: 'Нийт дүн',    value: fmt(totals.subtotal),       color: C.muted2 },
+      { label: `Хөнгөлөлт (${pricing.discount_pct}%)`, value: pricing.discount_pct > 0 ? `-${fmt(totals.discount_amount)}` : '—', color: C.danger },
+      { label: `НӨАТ (${pricing.vat_pct}%)`, value: fmt(totals.vat_amount), color: C.muted2 },
     ];
 
     totLines.forEach((t, i) => {
-      const ty = totY + 0.1 + i * 0.42;
-      const isGrand = i === totLines.length - 1;
-      if (isGrand) {
-        s.addShape('rect' as PptxGenJS.ShapeType, {
-          x: 8.05, y: ty - 0.05, w: W - 8.45, h: 0.42,
-          fill: { color: C.dark }, line: { color: C.dark, width: 0 },
-        });
-      }
+      const ty = totY + 0.08 + i * 0.36;
       s.addText(t.label, {
-        x: 8.15, y: ty, w: 2.4, h: 0.35,
+        x: totX, y: ty, w: totW * 0.55, h: 0.32,
         align: 'left', valign: 'middle',
-        fontSize: isGrand ? 10 : 9,
-        bold: isGrand,
-        color: isGrand ? C.white : C.grayMd,
-        fontFace: 'Arial',
+        fontFace: F.body, fontSize: 9, color: C.muted,
       });
       s.addText(t.value, {
-        x: 10.0, y: ty, w: W - 10.35, h: 0.35,
+        x: totX + totW * 0.55, y: ty, w: totW * 0.44, h: 0.32,
         align: 'right', valign: 'middle',
-        fontSize: isGrand ? 12 : 9,
-        bold: isGrand,
-        color: isGrand ? C.white : t.color,
-        fontFace: 'Arial',
+        fontFace: F.body, fontSize: 9, color: t.color,
       });
+    });
+
+    /* Grand total — large gold serif */
+    const gtY = totY + totLines.length * 0.36 + 0.12;
+    addDivider(s, totX, gtY, totW);
+
+    s.addText('НИЙТ ТӨЛБӨР', {
+      x: totX, y: gtY + 0.1, w: totW * 0.5, h: 0.5,
+      align: 'left', valign: 'middle',
+      fontFace: F.sans, fontSize: 8,
+      bold: true, charSpacing: 1.5, color: C.muted2,
+    });
+    s.addText(fmt(totals.grand_total), {
+      x: totX, y: gtY + 0.1, w: totW - 0.1, h: 0.5,
+      align: 'right', valign: 'middle',
+      fontFace: F.serif, fontSize: 26,
+      color: C.gold,
     });
   }
 
   /* ── Download ─────────────────────────────────────────────────────── */
   const fileName = `${header.brand_name || 'Proposal'}_${header.campaign_name || 'Draft'}.pptx`
-    .replace(/[^a-zA-Z0-9А-Яа-яҮүӨөЭэ\s_-]/g, '')
+    .replace(/[^a-zA-Z0-9А-Яа-яҮүӨөЭэ\s._-]/g, '')
     .replace(/\s+/g, '_');
 
   await pptx.writeFile({ fileName });
-}
-
-/* ── Helper: Cover label ─────────────────────────────────────────────── */
-function slide1Label(s: PptxGenJS.Slide, x: number, y: number, w: number, text: string) {
-  s.addShape('rect' as PptxGenJS.ShapeType, {
-    x, y, w, h: 0.4,
-    fill: { color: C.lblue }, line: { color: C.lblue, width: 0 },
-  });
-  s.addText(text, {
-    x, y, w, h: 0.4,
-    align: 'left', valign: 'middle',
-    fontSize: 11, bold: true,
-    color: C.dark, fontFace: 'Arial',
-  });
 }
