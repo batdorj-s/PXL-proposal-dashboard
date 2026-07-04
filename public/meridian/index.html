@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MERIDIAN — Proposal Intelligence</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Custom cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <!-- Noise overlay -->
+  <div class="noise-overlay"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-logo">
+      <span class="nav-logo-text">MERIDIAN</span>
+      <span class="nav-logo-tag">© 2026</span>
+    </div>
+    <div class="nav-links">
+      <a href="#manifesto" class="nav-link magnetic" data-text="Manifesto">Manifesto</a>
+      <a href="#proposals" class="nav-link magnetic" data-text="Work">Work</a>
+      <a href="#metrics" class="nav-link magnetic" data-text="Metrics">Metrics</a>
+      <a href="#contact" class="nav-link magnetic" data-text="Contact">Contact</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#contact" class="btn-nav magnetic">Start Project</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+  <section class="hero" id="hero">
+    <canvas class="hero-canvas" id="heroCanvas"></canvas>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-line"></span>
+        <span class="eyebrow-text reveal-word">Creative Intelligence Agency</span>
+      </div>
+
+      <h1 class="hero-title">
+        <div class="title-line overflow-hidden">
+          <span class="reveal-line">We craft</span>
+        </div>
+        <div class="title-line overflow-hidden">
+          <span class="reveal-line italic">proposals</span>
+        </div>
+        <div class="title-line overflow-hidden">
+          <span class="reveal-line">that <em>close.</em></span>
+        </div>
+      </h1>
+
+      <div class="hero-sub">
+        <p class="reveal-fade">Strategy-first marketing proposals built for decision-makers. Every deck is a cinematic argument for your brand.</p>
+      </div>
+
+      <div class="hero-actions reveal-fade">
+        <a href="#proposals" class="btn-primary magnetic">
+          <span class="btn-text">View Proposals</span>
+          <span class="btn-icon">↘</span>
+        </a>
+        <a href="#manifesto" class="btn-ghost magnetic">Our Method</a>
+      </div>
+    </div>
+
+    <div class="hero-scroll-indicator">
+      <div class="scroll-line"></div>
+      <span class="scroll-text">Scroll</span>
+    </div>
+
+    <div class="hero-corner-info">
+      <div class="corner-stat">
+        <span class="corner-num" data-count="147">0</span>
+        <span class="corner-label">Proposals Delivered</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ MANIFESTO ═══════════════════════════ -->
+  <section class="manifesto" id="manifesto">
+    <div class="manifesto-inner">
+      <div class="manifesto-label">
+        <span>01</span>
+        <span>Manifesto</span>
+      </div>
+      <div class="manifesto-text-wrap">
+        <p class="manifesto-line split-line">Most proposals fail</p>
+        <p class="manifesto-line split-line accent">before they're opened.</p>
+        <p class="manifesto-line split-line dim">We design the moment of opening.</p>
+        <p class="manifesto-line split-line dim">The first scroll. The first pause.</p>
+        <p class="manifesto-line split-line">The decision.</p>
+      </div>
+      <div class="manifesto-aside">
+        <div class="aside-item reveal-fade-up">
+          <span class="aside-num">94%</span>
+          <span class="aside-desc">Client approval rate on first submission</span>
+        </div>
+        <div class="aside-item reveal-fade-up">
+          <span class="aside-num">3×</span>
+          <span class="aside-desc">Faster deal close vs. traditional decks</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ PROPOSALS (Horizontal) ═══════════════════════════ -->
+  <section class="proposals-section" id="proposals">
+    <div class="proposals-header">
+      <div class="section-label">
+        <span>02</span>
+        <span>Selected Work</span>
+      </div>
+      <h2 class="section-title split-line">Recent Proposals</h2>
+    </div>
+
+    <div class="proposals-track-wrap" id="proposalsTrack">
+      <div class="proposals-track">
+
+        <article class="proposal-card tilt-card" data-category="Brand Strategy">
+          <div class="card-bg" style="--card-hue: 210deg"></div>
+          <div class="card-num">01</div>
+          <div class="card-body">
+            <span class="card-tag">Brand Strategy</span>
+            <h3 class="card-title">Nomadic Consumer Report 2026</h3>
+            <p class="card-desc">Full-funnel brand repositioning for a D2C outdoor brand entering Asian markets.</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-value">$2.4M Budget</span>
+            <span class="card-arrow">→</span>
+          </div>
+          <div class="card-shine"></div>
+        </article>
+
+        <article class="proposal-card tilt-card" data-category="Digital Campaign">
+          <div class="card-bg" style="--card-hue: 45deg"></div>
+          <div class="card-num">02</div>
+          <div class="card-body">
+            <span class="card-tag">Digital Campaign</span>
+            <h3 class="card-title">Aurora Finance Launch</h3>
+            <p class="card-desc">Multi-channel acquisition campaign for a neo-bank's Series B go-to-market.</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-value">$890K Budget</span>
+            <span class="card-arrow">→</span>
+          </div>
+          <div class="card-shine"></div>
+        </article>
+
+        <article class="proposal-card tilt-card" data-category="Creative Direction">
+          <div class="card-bg" style="--card-hue: 280deg"></div>
+          <div class="card-num">03</div>
+          <div class="card-body">
+            <span class="card-tag">Creative Direction</span>
+            <h3 class="card-title">Velour Luxury Rebranding</h3>
+            <p class="card-desc">Visual identity overhaul and flagship store experience design for a heritage fashion house.</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-value">$5.1M Budget</span>
+            <span class="card-arrow">→</span>
+          </div>
+          <div class="card-shine"></div>
+        </article>
+
+        <article class="proposal-card tilt-card" data-category="Performance">
+          <div class="card-bg" style="--card-hue: 160deg"></div>
+          <div class="card-num">04</div>
+          <div class="card-body">
+            <span class="card-tag">Performance Marketing</span>
+            <h3 class="card-title">PeakFit Growth Engine</h3>
+            <p class="card-desc">Paid media + creative testing framework scaling from $50K to $400K MRR in 6 months.</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-value">$1.2M Budget</span>
+            <span class="card-arrow">→</span>
+          </div>
+          <div class="card-shine"></div>
+        </article>
+
+        <article class="proposal-card tilt-card" data-category="GTM Strategy">
+          <div class="card-bg" style="--card-hue: 0deg"></div>
+          <div class="card-num">05</div>
+          <div class="card-body">
+            <span class="card-tag">GTM Strategy</span>
+            <h3 class="card-title">Strata SaaS Market Entry</h3>
+            <p class="card-desc">Enterprise B2B go-to-market proposal for a construction intelligence platform.</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-value">$3.7M Budget</span>
+            <span class="card-arrow">→</span>
+          </div>
+          <div class="card-shine"></div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ METRICS ═══════════════════════════ -->
+  <section class="metrics" id="metrics">
+    <div class="metrics-inner">
+      <div class="section-label">
+        <span>03</span>
+        <span>By the Numbers</span>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-item reveal-fade-up">
+          <div class="metric-num-wrap">
+            <span class="metric-num" data-target="147" data-suffix="">0</span>
+          </div>
+          <div class="metric-bar"><div class="metric-bar-fill" data-width="92"></div></div>
+          <span class="metric-label">Proposals Delivered</span>
+        </div>
+        <div class="metric-item reveal-fade-up">
+          <div class="metric-num-wrap">
+            <span class="metric-num" data-target="94" data-suffix="%">0</span>
+          </div>
+          <div class="metric-bar"><div class="metric-bar-fill" data-width="94"></div></div>
+          <span class="metric-label">First-Round Approval</span>
+        </div>
+        <div class="metric-item reveal-fade-up">
+          <div class="metric-num-wrap">
+            <span class="metric-prefix">$</span><span class="metric-num" data-target="48" data-suffix="M">0</span>
+          </div>
+          <div class="metric-bar"><div class="metric-bar-fill" data-width="78"></div></div>
+          <span class="metric-label">Total Budget Managed</span>
+        </div>
+        <div class="metric-item reveal-fade-up">
+          <div class="metric-num-wrap">
+            <span class="metric-num" data-target="32" data-suffix="">0</span>
+          </div>
+          <div class="metric-bar"><div class="metric-bar-fill" data-width="60"></div></div>
+          <span class="metric-label">Global Clients</span>
+        </div>
+      </div>
+
+      <div class="metrics-quote reveal-fade">
+        <blockquote>
+          "The Meridian team didn't just send us a proposal — they sent us a vision. We signed within 48 hours."
+        </blockquote>
+        <cite>— Sarah K., CMO at Velour Group</cite>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ PROCESS ═══════════════════════════ -->
+  <section class="process" id="process">
+    <div class="process-inner">
+      <div class="section-label">
+        <span>04</span>
+        <span>The Method</span>
+      </div>
+      <div class="process-steps">
+        <div class="process-step reveal-fade-up">
+          <span class="step-num">I</span>
+          <h3 class="step-title">Diagnose</h3>
+          <p class="step-desc">We dissect your brand, competitive landscape, and audience psychology before a single slide is made.</p>
+        </div>
+        <div class="process-connector"></div>
+        <div class="process-step reveal-fade-up">
+          <span class="step-num">II</span>
+          <h3 class="step-title">Architect</h3>
+          <p class="step-desc">Every proposal is built on a narrative spine — a story arc designed to move decision-makers emotionally.</p>
+        </div>
+        <div class="process-connector"></div>
+        <div class="process-step reveal-fade-up">
+          <span class="step-num">III</span>
+          <h3 class="step-title">Execute</h3>
+          <p class="step-desc">Cinematic design, interactive elements, and precise financial modeling delivered in 5 business days.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ CONTACT ═══════════════════════════ -->
+  <section class="contact" id="contact">
+    <div class="contact-inner">
+      <div class="section-label">
+        <span>05</span>
+        <span>Begin</span>
+      </div>
+      <h2 class="contact-title split-line">Ready to close?</h2>
+      <p class="contact-sub reveal-fade">Tell us about your project. We respond within 24 hours.</p>
+
+      <form class="contact-form" id="contactForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input magnetic-input" placeholder="Full name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Company</label>
+            <input type="text" class="form-input magnetic-input" placeholder="Company name" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input magnetic-input" placeholder="you@company.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Budget Range</label>
+            <select class="form-input form-select magnetic-input">
+              <option value="">Select range</option>
+              <option>Under $100K</option>
+              <option>$100K – $500K</option>
+              <option>$500K – $2M</option>
+              <option>$2M+</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Project Brief</label>
+          <textarea class="form-input form-textarea magnetic-input" placeholder="Describe your project, goals, and timeline..."></textarea>
+        </div>
+        <div class="form-submit">
+          <button type="submit" class="btn-submit magnetic">
+            <span class="btn-submit-text">Send Brief</span>
+            <span class="btn-submit-icon">↗</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <span class="footer-logo">MERIDIAN</span>
+        <span class="footer-copy">© 2026 Meridian Agency. All rights reserved.</span>
+      </div>
+      <div class="footer-right">
+        <a href="#" class="footer-link magnetic">LinkedIn</a>
+        <a href="#" class="footer-link magnetic">Instagram</a>
+        <a href="#" class="footer-link magnetic">Dribbble</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/CustomEase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

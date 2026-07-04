@@ -11,15 +11,15 @@ export default function BlockBackground({ data, onChange }: Props) {
 
   return (
     <div id="block-1" className="block-card">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <span className="block-badge">1</span>
-        <div>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)' }}>Background</div>
-          <div style={{ fontSize: 20, fontWeight: 700 }}>Нөхцөл байдал</div>
+      <div className="block-header">
+        <span className="block-number">01</span>
+        <div className="block-title-group">
+          <div className="block-subtitle">Background</div>
+          <h2 className="block-title">Нөхцөл байдал</h2>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
         <div>
           <label className="field-label">Брэндийн одоогийн нөхцөл</label>
           <textarea
@@ -40,7 +40,12 @@ export default function BlockBackground({ data, onChange }: Props) {
           />
         </div>
         <div>
-          <label className="field-label">Дэмжих тоо баримт <span style={{ color: 'var(--muted)', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(заавал биш)</span></label>
+          <label className="field-label">
+            Дэмжих тоо баримт{' '}
+            <span style={{ color: 'var(--muted)', fontWeight: 300, textTransform: 'none', letterSpacing: 0 }}>
+              (заавал биш)
+            </span>
+          </label>
           <textarea
             className="field-textarea"
             placeholder="Борлуулалт, зах зээлийн хувь, судалгаа г.м"

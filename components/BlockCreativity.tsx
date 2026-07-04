@@ -29,27 +29,31 @@ export default function BlockCreativity({ data, onChange }: Props) {
 
   return (
     <div id="block-5" className="block-card">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <span className="block-badge">5</span>
-        <div>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)' }}>Creativity</div>
-          <div style={{ fontSize: 20, fontWeight: 700 }}>Бүтээлч санаа</div>
+      <div className="block-header">
+        <span className="block-number">05</span>
+        <div className="block-title-group">
+          <div className="block-subtitle">Creativity</div>
+          <h2 className="block-title">Бүтээлч санаа</h2>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+        {/* Big Idea */}
         <div>
           <label className="field-label">Big Idea</label>
           <textarea
             className="field-textarea large"
-            style={{ fontSize: 16 }}
+            style={{ fontSize: 16, lineHeight: 1.7 }}
             placeholder="Нэг өгүүлбэрт багтах гол санаа — реклам, эвент, бүх зүйл эндээс ургана."
             value={data.big_idea}
             onChange={e => set('big_idea', e.target.value)}
           />
-          <div className="field-hint">Big idea нь tagline биш — tagline, реклам, эвент бүгд эндээс ургадаг гол санаа.</div>
+          <div className="field-hint">
+            Big idea нь tagline биш — tagline, реклам, эвент бүгд эндээс ургадаг гол санаа.
+          </div>
         </div>
 
+        {/* Tagline */}
         <div>
           <label className="field-label">Tagline — Уриа үг</label>
           <input
@@ -62,77 +66,84 @@ export default function BlockCreativity({ data, onChange }: Props) {
 
         {/* Executions */}
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <label className="field-label" style={{ margin: 0 }}>Гүйцэтгэлийн жишээнүүд</label>
-            <button className="btn btn-ghost" onClick={addExecution} type="button">+ Нэмэх</button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <label className="field-label" style={{ margin: 0 }}>
+              Гүйцэтгэлийн жишээнүүд
+            </label>
+            <button className="btn btn-ghost" onClick={addExecution} type="button">
+              + Нэмэх
+            </button>
           </div>
 
           {data.executions.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '24px', color: 'var(--muted)', fontSize: 13, border: '1px dashed var(--border)', borderRadius: 10 }}>
+            <div style={{
+              textAlign: 'center',
+              padding: '32px 24px',
+              color: 'var(--muted)',
+              fontSize: 13,
+              border: '1px dashed var(--border-2)',
+              borderRadius: 2,
+              fontStyle: 'italic',
+            }}>
               Гүйцэтгэлийн жишээ нэмнэ үү (постер, рийлс, эвент...)
             </div>
           )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {data.executions.map((ex, i) => (
-              <div key={ex.id} style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 12, padding: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                  <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600 }}>#{i + 1}</span>
+              <div key={ex.id} className="execution-card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                  <span style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: 11,
+                    fontStyle: 'italic',
+                    color: 'var(--gold)',
+                    flexShrink: 0,
+                  }}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
                   <select
                     className="field-select"
-                    style={{ background: 'var(--surface)', flex: 1 }}
+                    style={{ flex: 1 }}
                     value={ex.content_type}
                     onChange={e => updateExecution(ex.id, { content_type: e.target.value as ContentType, sample: '' })}
                   >
                     <option value="">— Контент төрөл —</option>
                     {CONTENT_TYPES.map(ct => <option key={ct} value={ct}>{ct}</option>)}
                   </select>
-                  <button className="btn btn-danger" style={{ padding: '6px 10px' }} onClick={() => removeExecution(ex.id)} type="button">✕</button>
+                  <button
+                    className="btn btn-danger"
+                    style={{ padding: '4px 10px', fontSize: 10 }}
+                    onClick={() => removeExecution(ex.id)}
+                    type="button"
+                  >
+                    ✕
+                  </button>
                 </div>
 
-                <textarea
-                  className="field-textarea"
-                  style={{ background: 'var(--surface)', marginBottom: 10 }}
-                  placeholder="Тухайн гүйцэтгэлийн тайлбар..."
-                  value={ex.description}
-                  onChange={e => updateExecution(ex.id, { description: e.target.value })}
-                />
+                <div style={{ marginBottom: ex.content_type ? 12 : 0 }}>
+                  <label className="field-label">Тайлбар</label>
+                  <textarea
+                    className="field-textarea"
+                    placeholder="Тухайн гүйцэтгэлийн тайлбар..."
+                    value={ex.description}
+                    onChange={e => updateExecution(ex.id, { description: e.target.value })}
+                  />
+                </div>
 
                 {ex.content_type && (
-                  isMedia(ex.content_type) ? (
-                    <div>
-                      <label className="field-label">Видео линк / файл</label>
-                      <input
-                        className="field-input"
-                        style={{ background: 'var(--surface)' }}
-                        placeholder="https://..."
-                        value={ex.sample}
-                        onChange={e => updateExecution(ex.id, { sample: e.target.value })}
-                      />
-                    </div>
-                  ) : ex.content_type === 'Постер' ? (
-                    <div>
-                      <label className="field-label">Зургийн линк</label>
-                      <input
-                        className="field-input"
-                        style={{ background: 'var(--surface)' }}
-                        placeholder="Зургийн URL эсвэл тайлбар..."
-                        value={ex.sample}
-                        onChange={e => updateExecution(ex.id, { sample: e.target.value })}
-                      />
-                    </div>
-                  ) : (
-                    <div>
-                      <label className="field-label">Жишээ / Дэлгэрэнгүй</label>
-                      <input
-                        className="field-input"
-                        style={{ background: 'var(--surface)' }}
-                        placeholder="Жишээ, референс..."
-                        value={ex.sample}
-                        onChange={e => updateExecution(ex.id, { sample: e.target.value })}
-                      />
-                    </div>
-                  )
+                  <div>
+                    <label className="field-label">
+                      {isMedia(ex.content_type) ? 'Видео линк / файл' :
+                       ex.content_type === 'Постер' ? 'Зургийн линк' : 'Жишээ / Дэлгэрэнгүй'}
+                    </label>
+                    <input
+                      className="field-input"
+                      placeholder={isMedia(ex.content_type) ? 'https://...' : 'Жишээ, референс...'}
+                      value={ex.sample}
+                      onChange={e => updateExecution(ex.id, { sample: e.target.value })}
+                    />
+                  </div>
                 )}
               </div>
             ))}

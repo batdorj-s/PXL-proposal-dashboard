@@ -14,11 +14,8 @@ function newItem(): LineItem {
 export default function BlockPricing({ data, onChange }: Props) {
   const totals = calcPricing(data);
 
-  const addItem = () => onChange({ ...data, items: [...data.items, newItem()] });
-
-  const removeItem = (id: string) =>
-    onChange({ ...data, items: data.items.filter(i => i.id !== id) });
-
+  const addItem    = () => onChange({ ...data, items: [...data.items, newItem()] });
+  const removeItem = (id: string) => onChange({ ...data, items: data.items.filter(i => i.id !== id) });
   const updateItem = (id: string, patch: Partial<LineItem>) =>
     onChange({ ...data, items: data.items.map(i => (i.id === id ? { ...i, ...patch } : i)) });
 
@@ -32,18 +29,28 @@ export default function BlockPricing({ data, onChange }: Props) {
 
   return (
     <div id="block-6" className="block-card">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <span className="block-badge">6</span>
-        <div>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)' }}>Pricing</div>
-          <div style={{ fontSize: 20, fontWeight: 700 }}>Үнийн санал</div>
+      <div className="block-header">
+        <span className="block-number">06</span>
+        <div className="block-title-group">
+          <div className="block-subtitle">Pricing</div>
+          <h2 className="block-title">Үнийн санал</h2>
         </div>
-        <div style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--muted)', background: 'var(--surface2)', padding: '4px 10px', borderRadius: 20 }}>
+        <div style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: 9,
+          color: 'var(--muted)',
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          padding: '4px 10px',
+          border: '1px solid var(--border-2)',
+          borderRadius: 2,
+          alignSelf: 'flex-start',
+        }}>
           Автомат тооцоолол
         </div>
       </div>
 
-      {/* Line items table */}
+      {/* Line items */}
       <div style={{ overflowX: 'auto', marginBottom: 20 }}>
         <table className="pricing-table">
           <thead>
@@ -59,7 +66,16 @@ export default function BlockPricing({ data, onChange }: Props) {
           <tbody>
             {data.items.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ textAlign: 'center', color: 'var(--muted)', padding: 24 }}>
+                <td
+                  colSpan={6}
+                  style={{
+                    textAlign: 'center',
+                    color: 'var(--muted)',
+                    padding: '32px 24px',
+                    fontStyle: 'italic',
+                    fontSize: 13,
+                  }}
+                >
                   Мөр нэмнэ үү
                 </td>
               </tr>
@@ -68,7 +84,15 @@ export default function BlockPricing({ data, onChange }: Props) {
               const line_total = item.unit_price * Math.max(0, item.quantity);
               return (
                 <tr key={item.id}>
-                  <td style={{ color: 'var(--muted)', width: 32 }}>{i + 1}</td>
+                  <td style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontStyle: 'italic',
+                    color: 'var(--muted)',
+                    width: 36,
+                    fontSize: 11,
+                  }}>
+                    {String(i + 1).padStart(2, '0')}
+                  </td>
                   <td>
                     <select
                       className="field-select"
@@ -97,7 +121,7 @@ export default function BlockPricing({ data, onChange }: Props) {
                       type="number"
                       min={1}
                       step={1}
-                      style={{ width: 80 }}
+                      style={{ width: 72 }}
                       value={item.quantity || ''}
                       onChange={e => updateItem(item.id, { quantity: Math.floor(Number(e.target.value)) })}
                       placeholder="1"
@@ -107,7 +131,14 @@ export default function BlockPricing({ data, onChange }: Props) {
                     <span className="computed-value">{fmt(line_total)}</span>
                   </td>
                   <td>
-                    <button className="btn btn-danger" style={{ padding: '4px 8px' }} onClick={() => removeItem(item.id)} type="button">✕</button>
+                    <button
+                      className="btn btn-danger"
+                      style={{ padding: '3px 8px', fontSize: 10 }}
+                      onClick={() => removeItem(item.id)}
+                      type="button"
+                    >
+                      ✕
+                    </button>
                   </td>
                 </tr>
               );
@@ -116,18 +147,21 @@ export default function BlockPricing({ data, onChange }: Props) {
         </table>
       </div>
 
-      <div style={{ marginBottom: 24 }}>
-        <button className="btn btn-ghost" onClick={addItem} type="button">+ Мөр нэмэх</button>
+      <div style={{ marginBottom: 28 }}>
+        <button className="btn btn-ghost" onClick={addItem} type="button">
+          + Мөр нэмэх
+        </button>
       </div>
 
       {/* Rate card hint */}
-      <div style={{ marginBottom: 24, padding: '12px 16px', background: 'var(--surface2)', borderRadius: 10, border: '1px solid var(--border)', fontSize: 12, color: 'var(--muted)' }}>
-        <strong style={{ color: 'var(--text)' }}>Rate card (өгөгдмөл үнэ):</strong>{' '}
-        Рийлс 2M₮ · Постер 500K₮ · Видео 5M₮ · Сошиал пост 300K₮ — контент төрөл сонгоход автоматаар бөглөгдөнө. Та дарж засаж болно.
+      <div className="info-box" style={{ marginBottom: 28 }}>
+        <strong>Rate card:</strong>{' '}
+        Рийлс 2M₮ · Постер 500K₮ · Видео 5M₮ · Сошиал пост 300K₮ —
+        контент төрөл сонгоход автоматаар бөглөгдөнө. Та дарж засаж болно.
       </div>
 
       {/* Discount & VAT */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 40px', marginBottom: 28 }}>
         <div>
           <label className="field-label">Хөнгөлөлт (%)</label>
           <input
@@ -154,25 +188,44 @@ export default function BlockPricing({ data, onChange }: Props) {
       </div>
 
       {/* Totals */}
-      <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 20, border: '1px solid var(--border)' }}>
+      <div style={{
+        background: 'var(--surface-2)',
+        border: '1px solid var(--border)',
+        borderRadius: 2,
+        padding: '4px 24px 20px',
+      }}>
         <div className="totals-row">
-          <span style={{ color: 'var(--muted)' }}>Нийт дүн</span>
-          <span style={{ fontWeight: 600 }}>{fmt(totals.subtotal)}</span>
+          <span style={{ color: 'var(--muted)', fontFamily: 'var(--font-sans)', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            Нийт дүн
+          </span>
+          <span style={{ fontFamily: 'var(--font-serif)', fontSize: 16 }}>{fmt(totals.subtotal)}</span>
         </div>
+
         {data.discount_pct > 0 && (
           <div className="totals-row">
-            <span style={{ color: 'var(--muted)' }}>Хөнгөлөлт ({data.discount_pct}%)</span>
-            <span style={{ color: 'var(--danger)' }}>−{fmt(totals.discount_amount)}</span>
+            <span style={{ color: 'var(--muted)', fontFamily: 'var(--font-sans)', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Хөнгөлөлт ({data.discount_pct}%)
+            </span>
+            <span style={{ color: 'var(--danger)', fontFamily: 'var(--font-serif)', fontSize: 16 }}>
+              −{fmt(totals.discount_amount)}
+            </span>
           </div>
         )}
+
         <div className="totals-row">
-          <span style={{ color: 'var(--muted)' }}>НӨАТ-гүй нийт</span>
-          <span>{fmt(totals.total_before_vat)}</span>
+          <span style={{ color: 'var(--muted)', fontFamily: 'var(--font-sans)', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            НӨАТ-гүй нийт
+          </span>
+          <span style={{ fontFamily: 'var(--font-serif)', fontSize: 16 }}>{fmt(totals.total_before_vat)}</span>
         </div>
+
         <div className="totals-row">
-          <span style={{ color: 'var(--muted)' }}>НӨАТ ({data.vat_pct}%)</span>
-          <span>{fmt(totals.vat_amount)}</span>
+          <span style={{ color: 'var(--muted)', fontFamily: 'var(--font-sans)', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            НӨАТ ({data.vat_pct}%)
+          </span>
+          <span style={{ fontFamily: 'var(--font-serif)', fontSize: 16 }}>{fmt(totals.vat_amount)}</span>
         </div>
+
         <div className="totals-row grand">
           <span>Нийт төлбөр</span>
           <span>{fmt(totals.grand_total)}</span>
