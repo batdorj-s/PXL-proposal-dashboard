@@ -77,7 +77,7 @@ export default function Home() {
     );
     BLOCKS.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el); });
     return () => obs.disconnect();
-  }, [proposal]);
+  }, []);
 
   const handlePrint = () => window.print();
 
