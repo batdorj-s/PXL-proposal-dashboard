@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Proposal, RATE_CARD } from '@/types';
 import { loadDrafts, newDraft, saveDraft } from '@/lib/storage';
 import { calcPricing, fmt } from '@/lib/pricing';
+import { generatePptx } from '@/lib/generatePptx';
 import BlockHeader from '@/components/BlockHeader';
 import BlockBackground from '@/components/BlockBackground';
 import BlockPersona from '@/components/BlockPersona';
@@ -20,6 +21,7 @@ export default function Home() {
   const [proposal, setProposal] = useState<Proposal | null>(null);
   const [activeBlock, setActiveBlock] = useState('block-0');
   const [saving, setSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
@@ -90,6 +92,16 @@ export default function Home() {
   }, [proposal]);
 
   const handlePrint = () => window.print();
+
+  const handleExportPptx = async () => {
+    if (!proposal || exporting) return;
+    setExporting(true);
+    try {
+      await generatePptx(proposal);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   if (!proposal) {
     return (
@@ -238,6 +250,23 @@ export default function Home() {
 
             <button className="btn btn-success no-print" onClick={handlePrint}>
               ↓ PDF
+            </button>
+
+            <button
+              className="btn no-print"
+              onClick={handleExportPptx}
+              disabled={exporting}
+              style={{
+                background: exporting ? 'transparent' : 'transparent',
+                color: exporting ? 'var(--muted)' : 'var(--gold)',
+                border: '1px solid var(--gold-dim)',
+                opacity: exporting ? 0.6 : 1,
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { if (!exporting) { e.currentTarget.style.background = 'var(--gold)'; e.currentTarget.style.color = 'var(--bg)'; } }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = exporting ? 'var(--muted)' : 'var(--gold)'; }}
+            >
+              {exporting ? '...' : '↓ PPT'}
             </button>
           </div>
         </header>
